@@ -722,7 +722,7 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(r => r.json())
         .then(cats => {
           const catListContainer = document.querySelector('.filter-category-list');
-          if (catListContainer && cats.length > 0) {
+          if (catListContainer && cats && Array.isArray(cats) && cats.length > 0) {
             // Keep "All" as first item
             catListContainer.innerHTML = '<li><a href="#" class="filter-link-item active" data-category="All">All Collections</a></li>';
 
@@ -750,7 +750,14 @@ document.addEventListener('DOMContentLoaded', () => {
           }
           return fetch('/api/products', { cache: 'no-store' });
         })
-        .then(r => r.json())
+        .catch(err => {
+          console.error("Error fetching categories:", err);
+          return fetch('/api/products', { cache: 'no-store' });
+        })
+        .then(r => {
+          if (!r.ok) throw new Error("Failed to fetch products");
+          return r.json();
+        })
         .then(prods => {
           currentProducts = prods;
           
@@ -797,6 +804,18 @@ document.addEventListener('DOMContentLoaded', () => {
           }
 
           renderCatalog();
+        })
+        .catch(err => {
+          console.error("Catalog loading error:", err);
+          showToast("Could not connect to the server. Some items may be missing.", "error");
+          // Try to load from localStorage as absolute fallback
+          try {
+            const local = JSON.parse(localStorage.getItem('elawi_admin_products'));
+            if (local && local.length > 0) {
+              currentProducts = local;
+              renderCatalog();
+            }
+          } catch(e) {}
         });
     }
 

@@ -35,11 +35,14 @@ function standardizeProduct(p: any) {
   let originalPrice = p.originalPrice ? Number(p.originalPrice) : undefined;
   let salePrice = p.salePrice ? Number(p.salePrice) : undefined;
 
-  // Handle price synchronization between Admin (price=current) and Shop (price=original, salePrice=current)
+  // Consistency check: if price is lower than originalPrice, it's a sale
+  // Shop expects: price = original, salePrice = current
+  // Admin provides: price = current, originalPrice = original
   if (originalPrice && price < originalPrice) {
     salePrice = price;
     price = originalPrice;
-  } else if (salePrice && price > salePrice) {
+  } else if (salePrice && !originalPrice) {
+    // If we only have salePrice and price, originalPrice was likely price
     originalPrice = price;
   }
 

@@ -351,16 +351,16 @@
     ============================================ */
     function dbGetProducts() {
       try {
-        const raw = localStorage.getItem('aura_admin_products');
+        const raw = localStorage.getItem('elawi_admin_products');
         if (raw) return JSON.parse(raw);
-        localStorage.setItem('aura_admin_products', JSON.stringify(DEFAULT_PRODUCTS));
+        localStorage.setItem('elawi_admin_products', JSON.stringify(DEFAULT_PRODUCTS));
         return DEFAULT_PRODUCTS;
       } catch { return DEFAULT_PRODUCTS; }
     }
     function dbSaveProducts(list) {
-      localStorage.setItem('aura_admin_products', JSON.stringify(list));
+      localStorage.setItem('elawi_admin_products', JSON.stringify(list));
     }
-    function isLoggedIn() { return sessionStorage.getItem('aura_admin_auth') === '1'; }
+    function isLoggedIn() { return sessionStorage.getItem('elawi_admin_auth') === '1'; }
     function genId()      { return Date.now() + Math.floor(Math.random() * 1000); }
 
     /* ============================================
@@ -461,7 +461,7 @@
           const data = await res.json();
           setLoading(false);
           if (res.ok && data.success) {
-            sessionStorage.setItem('aura_admin_auth', '1');
+            sessionStorage.setItem('elawi_admin_auth', '1');
             onLogin();
           } else {
             setError(data.error || 'Invalid username or password.');
@@ -470,9 +470,9 @@
         .catch(err => {
           console.error(err);
           // Fallback to local login if API is offline
-          const currentPass = localStorage.getItem('aura_admin_password') || 'admin123';
+          const currentPass = localStorage.getItem('elawi_admin_password') || 'admin123';
           if (user === ADMIN_USER && pass === currentPass) {
-            sessionStorage.setItem('aura_admin_auth', '1');
+            sessionStorage.setItem('elawi_admin_auth', '1');
             onLogin();
           } else {
             setError('Invalid username or password.');
@@ -757,7 +757,7 @@
           setForm({
             title:         editProduct.title        || '',
             category:      editProduct.category     || categories[0] || 'Traditional',
-            price:         String(editProduct.price || ''),
+            price:         String(editProduct.salePrice || editProduct.price || ''),
             originalPrice: String(editProduct.originalPrice || ''),
             description:   editProduct.description  || '',
             rating:        String(editProduct.rating        || '4.7'),
@@ -1740,7 +1740,7 @@
                   })
                   .then(res => {
                     if (res.ok) {
-                      localStorage.setItem('aura_admin_password', newPass);
+                      localStorage.setItem('elawi_admin_password', newPass);
                       toast('Password updated successfully on server!','success');
                       setNewPass(''); setConfPass('');
                     } else {
@@ -1749,7 +1749,7 @@
                   })
                   .catch(err => {
                     console.error(err);
-                    localStorage.setItem('aura_admin_password', newPass);
+                    localStorage.setItem('elawi_admin_password', newPass);
                     toast('Password updated locally (Offline)','info');
                     setNewPass(''); setConfPass('');
                   });
@@ -1771,7 +1771,7 @@
                   fetch('/api/products.php?action=reset', { method: 'POST' })
                   .then(res => {
                     if (res.ok) {
-                      localStorage.removeItem('aura_admin_products');
+                      localStorage.removeItem('elawi_admin_products');
                       toast('Products reset to defaults on server.','success');
                       setTimeout(() => window.location.reload(), 1000);
                     } else {
@@ -1779,7 +1779,7 @@
                     }
                   })
                   .catch(() => {
-                    localStorage.removeItem('aura_admin_products');
+                    localStorage.removeItem('elawi_admin_products');
                     toast('Products reset locally (Offline).','info');
                     setTimeout(() => window.location.reload(), 1000);
                   });
@@ -1811,7 +1811,7 @@
       const [isOffline, setIsOffline] = useState(false);
       useEffect(() => {
         const checkStatus = () => {
-          setIsOffline(sessionStorage.getItem('aura_admin_offline_mode') === '1');
+          setIsOffline(sessionStorage.getItem('elawi_admin_offline_mode') === '1');
         };
         const interval = setInterval(checkStatus, 1000);
         return () => clearInterval(interval);
@@ -1821,7 +1821,7 @@
         <div className="bg-amber-500 text-white px-4 py-2 text-center text-xs font-bold animate-pulse shadow-md flex items-center justify-center gap-2">
           <i className="fas fa-plug-circle-xmark"></i>
           OFFLINE MODE — Changes are being saved locally to your browser only.
-          <button onClick={() => { sessionStorage.removeItem('aura_admin_offline_mode'); window.location.reload(); }} className="underline ml-2 hover:text-gray-100">Retry Connection</button>
+          <button onClick={() => { sessionStorage.removeItem('elawi_admin_offline_mode'); window.location.reload(); }} className="underline ml-2 hover:text-gray-100">Retry Connection</button>
         </div>
       );
     }
@@ -1844,6 +1844,7 @@
             setProducts(prodList);
             setCategories(catList);
             setLoading(false);
+            sessionStorage.removeItem('elawi_admin_offline_mode');
           })
           .catch(err => {
             console.error("API error, using local fallback", err);
@@ -1852,7 +1853,7 @@
             const defaultCats = ['Traditional', 'Modern Cut', 'Minimalist', 'Lounge Wear'];
             let localCats = defaultCats;
             try {
-              const saved = JSON.parse(localStorage.getItem('aura_categories'));
+              const saved = JSON.parse(localStorage.getItem('elawi_categories'));
               if (saved && Array.isArray(saved)) {
                 localCats = [...new Set([...defaultCats, ...saved])];
               }
@@ -1898,7 +1899,7 @@
         
         const defaultCats = ['Traditional', 'Modern Cut', 'Minimalist', 'Lounge Wear'];
         const custom = updated.filter(c => !defaultCats.includes(c));
-        localStorage.setItem('aura_categories', JSON.stringify(custom));
+        localStorage.setItem('elawi_categories', JSON.stringify(custom));
         
         return true;
       }, [categories, toast]);
@@ -1929,10 +1930,10 @@
         setCategories(updated);
 
         const custom = updated.filter(c => !defaultCats.includes(c));
-        localStorage.setItem('aura_categories', JSON.stringify(custom));
+        localStorage.setItem('elawi_categories', JSON.stringify(custom));
       }, [categories, toast]);
 
-      const logout = useCallback(()=>{ sessionStorage.removeItem('aura_admin_auth'); setAuth(false); }, []);
+      const logout = useCallback(()=>{ sessionStorage.removeItem('elawi_admin_auth'); setAuth(false); }, []);
 
       const handleSave = useCallback(prod => {
         toast('Saving product...', 'info');
