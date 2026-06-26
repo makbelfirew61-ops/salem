@@ -3,10 +3,22 @@
     "passwordHash": "elawipass123"
   },
   "categories": [
-    { "name": "Traditional", "count": 18 },
-    { "name": "Modern Cut", "count": 12 },
-    { "name": "Minimalist", "count": 15 },
-    { "name": "Lounge Wear", "count": 8 }
+    {
+      "name": "Traditional",
+      "count": 18
+    },
+    {
+      "name": "Modern Cut",
+      "count": 12
+    },
+    {
+      "name": "Minimalist",
+      "count": 15
+    },
+    {
+      "name": "Lounge Wear",
+      "count": 8
+    }
   ],
   "products": [
     {
@@ -20,7 +32,9 @@
       "colorName": "Alabaster Cream",
       "isNew": true,
       "description": "Hand-loomed cotton Habesha dress adorned with pure hand-stitched golden 'tilet' embroidery. A true cultural statement of premium heritage craftsmanship.",
-      "title": "The Alabaster Habesha Kemis"
+      "title": "The Alabaster Habesha Kemis",
+      "reviews": 144,
+      "icon": "👗"
     },
     {
       "id": 2,
@@ -34,7 +48,27 @@
       "salePrice": 380,
       "description": "Double-breasted unstructured blazer matched with wide-legged tailored trousers. Spun from high-density, breathable Italian organic linen.",
       "title": "The Terracotta Linen Suit",
-      "originalPrice": 420
+      "originalPrice": 420,
+      "reviews": 28,
+      "icon": "🧥"
+    },
+    {
+      "id": 1782485893168,
+      "title": "Verified Product 1782485891",
+      "name": "Verified Product 1782485891",
+      "category": "Traditional",
+      "price": 150,
+      "description": "This is a verified test product.",
+      "rating": 4.7,
+      "reviews": 17,
+      "color": "#2d2a26",
+      "size": "M",
+      "popularity": 80,
+      "icon": "🕴️",
+      "iconBg": "linear-gradient(135deg,#2d2a26,#4a4540)",
+      "colorVariants": [],
+      "emoji": "🕴️",
+      "colorName": "Obsidian Charcoal"
     }
   ],
   "users": []
