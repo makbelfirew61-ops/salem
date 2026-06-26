@@ -717,9 +717,18 @@ document.addEventListener('DOMContentLoaded', () => {
     if (filterBackdrop) filterBackdrop.addEventListener('click', closeDrawer);
 
     function fetchAndRender() {
+      // Health check first
+      fetch('/api/health')
+        .then(r => r.json())
+        .then(status => console.log('Shop connection:', status))
+        .catch(err => console.warn('Shop running in offline mode.'));
+
       // Fetch categories first to populate sidebar
       fetch('/api/categories.php', { cache: 'no-store' })
-        .then(r => r.json())
+        .then(r => {
+          if (!r.ok) throw new Error("Category fetch failed");
+          return r.json();
+        })
         .then(cats => {
           const catListContainer = document.querySelector('.filter-category-list');
           if (catListContainer && cats && Array.isArray(cats) && cats.length > 0) {
@@ -807,7 +816,7 @@ document.addEventListener('DOMContentLoaded', () => {
         })
         .catch(err => {
           console.error("Catalog loading error:", err);
-          showToast("Could not connect to the server. Some items may be missing.", "error");
+          showToast("Running in Offline Mode. Live updates may be unavailable.", "info");
           // Try to load from localStorage as absolute fallback
           try {
             const local = JSON.parse(localStorage.getItem('elawi_admin_products'));

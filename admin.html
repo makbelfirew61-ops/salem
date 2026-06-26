@@ -578,7 +578,12 @@
                 <div className="w-8 h-8 rounded-full bg-accent flex items-center justify-center font-heading font-bold text-xs flex-shrink-0 text-white">AD</div>
                 <div className="min-w-0">
                   <p className="text-sm font-semibold leading-tight truncate text-white">Administrator</p>
-                  <p className="text-xs text-gray-500">Super Admin</p>
+                  <div className="flex items-center gap-1.5 mt-0.5">
+                    <div className={`w-2 h-2 rounded-full ${sessionStorage.getItem('elawi_admin_offline_mode')==='1'?'bg-red-500 animate-pulse':'bg-emerald-500'}`}></div>
+                    <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">
+                      {sessionStorage.getItem('elawi_admin_offline_mode')==='1'?'Offline':'Online'}
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1819,10 +1824,16 @@
       }, []);
       if (!isOffline) return null;
       return (
-        <div className="bg-amber-500 text-white px-4 py-2 text-center text-xs font-bold animate-pulse shadow-md flex items-center justify-center gap-2">
-          <i className="fas fa-plug-circle-xmark"></i>
-          OFFLINE MODE — Changes are being saved locally to your browser only.
-          <button onClick={() => { sessionStorage.removeItem('elawi_admin_offline_mode'); window.location.reload(); }} className="underline ml-2 hover:text-gray-100">Retry Connection</button>
+        <div className="bg-red-600 text-white px-4 py-3 text-center text-xs font-bold animate-pulse shadow-xl flex items-center justify-center gap-3 z-[100] relative">
+          <i className="fas fa-triangle-exclamation text-base"></i>
+          <div>
+            <p className="uppercase tracking-widest">Database Offline</p>
+            <p className="font-medium opacity-90 mt-0.5">Changes are only saved to your browser and won't appear on the live shop.</p>
+          </div>
+          <button onClick={() => { sessionStorage.removeItem('elawi_admin_offline_mode'); window.location.reload(); }}
+            className="bg-white/20 hover:bg-white/30 px-3 py-1.5 rounded-lg transition-colors border border-white/40 ml-2">
+            Retry Sync
+          </button>
         </div>
       );
     }
@@ -1833,11 +1844,11 @@
           setLoading(true);
           Promise.all([
             fetch('/api/products.php', { cache: 'no-store' }).then(res => {
-              if (!res.ok) throw new Error('Failed to load products');
+              if (!res.ok) throw new Error('Failed to load products (' + res.status + ')');
               return res.json();
             }),
             fetch('/api/categories.php', { cache: 'no-store' }).then(res => {
-              if (!res.ok) throw new Error('Failed to load categories');
+              if (!res.ok) throw new Error('Failed to load categories (' + res.status + ')');
               return res.json();
             })
           ])
@@ -1848,7 +1859,8 @@
             sessionStorage.removeItem('elawi_admin_offline_mode');
           })
           .catch(err => {
-            console.error("API error, using local fallback", err);
+            console.error("Critical API error, engaging offline mode:", err);
+            sessionStorage.setItem('elawi_admin_offline_mode', '1');
             // Local fallback
             const localProds = dbGetProducts();
             const defaultCats = ['Traditional', 'Modern Cut', 'Minimalist', 'Lounge Wear'];
@@ -1886,12 +1898,14 @@
         .then(res => {
           if (res.ok) {
             toast(`Category "${trimmed}" saved to server!`, 'success');
+            sessionStorage.removeItem('elawi_admin_offline_mode');
           } else {
             toast('Failed to save category on server', 'error');
           }
         })
         .catch(err => {
-          console.error(err);
+          console.error('Category save failed:', err);
+          sessionStorage.setItem('elawi_admin_offline_mode', '1');
           toast(`Category "${trimmed}" saved locally (Offline)`, 'info');
         });
 
@@ -1945,7 +1959,7 @@
           body: JSON.stringify(prod)
         })
         .then(async res => {
-          if (!res.ok) throw new Error('Save failed');
+          if (!res.ok) throw new Error('Save failed with status ' + res.status);
           const savedProd = await res.json();
           
           setProducts(prev => {
@@ -1956,11 +1970,13 @@
           });
           
           toast(editProd ? `"${prod.title}" updated!` : `"${prod.title}" added to catalog!`, 'success');
+          sessionStorage.removeItem('elawi_admin_offline_mode');
           setEditProd(null);
           setPage('products');
         })
         .catch(err => {
-          console.error(err);
+          console.error('Save failed, using local storage:', err);
+          sessionStorage.setItem('elawi_admin_offline_mode', '1');
           // Fallback to local
           setProducts(prev => {
             const idx = prev.findIndex(p=>p.id===prod.id);
@@ -1981,12 +1997,14 @@
         .then(res => {
           if (res.ok) {
             toast('Product removed from database catalog.', 'success');
+            sessionStorage.removeItem('elawi_admin_offline_mode');
           } else {
             toast('Failed to delete product on server', 'error');
           }
         })
         .catch(err => {
-          console.error(err);
+          console.error('Delete failed:', err);
+          sessionStorage.setItem('elawi_admin_offline_mode', '1');
           toast('Product removed locally (Offline Mode).', 'info');
         });
 

@@ -185,8 +185,17 @@ async function startServer() {
 
   // Logging API requests
   app.use((req, res, next) => {
-    console.log(`[API LOG]: ${req.method} ${req.url}`);
+    const start = Date.now();
+    res.on('finish', () => {
+      const duration = Date.now() - start;
+      console.log(`[API LOG]: ${req.method} ${req.url} - ${res.statusCode} (${duration}ms)`);
+    });
     next();
+  });
+
+  // Health check
+  app.get("/api/health", (req, res) => {
+    res.json({ status: "online", timestamp: new Date().toISOString(), database: "connected" });
   });
 
   // Disable caching for all API responses

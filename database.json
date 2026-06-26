@@ -69,6 +69,20 @@
       "colorVariants": [],
       "emoji": "🕴️",
       "colorName": "Obsidian Charcoal"
+    },
+    {
+      "title": "Manual Verified Product 1782491729420",
+      "description": "Verified via Manual Node API test.",
+      "price": 299,
+      "category": "Traditional",
+      "rating": 4.5,
+      "reviews": 10,
+      "color": "#000000",
+      "icon": "✨",
+      "id": 1782491729508,
+      "name": "Manual Verified Product 1782491729420",
+      "emoji": "✨",
+      "colorName": "Cream"
     }
   ],
   "users": []
