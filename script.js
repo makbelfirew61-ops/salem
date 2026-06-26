@@ -534,7 +534,20 @@ document.addEventListener('DOMContentLoaded', () => {
   if (searchInput) {
     searchInput.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' && searchInput.value.trim()) {
-        const query = encodeURIComponent(searchInput.value.trim());
+        const rawQuery = searchInput.value.trim();
+        const query = encodeURIComponent(rawQuery);
+
+        // Save to search history for admin analytics
+        try {
+          const history = JSON.parse(localStorage.getItem('elawi_search_history')) || [];
+          if (!history.includes(rawQuery)) {
+            history.unshift(rawQuery);
+            localStorage.setItem('elawi_search_history', JSON.stringify(history.slice(0, 50)));
+          }
+        } catch (e) {
+          console.error('Error saving search history', e);
+        }
+
         window.location.href = `shop.html?search=${query}`;
       }
     });
@@ -704,13 +717,46 @@ document.addEventListener('DOMContentLoaded', () => {
     if (filterBackdrop) filterBackdrop.addEventListener('click', closeDrawer);
 
     function fetchAndRender() {
-      fetch('/api/products', { cache: 'no-store' })
+      // Fetch categories first to populate sidebar
+      fetch('/api/categories', { cache: 'no-store' })
+        .then(r => r.json())
+        .then(cats => {
+          const catListContainer = document.querySelector('.filter-category-list');
+          if (catListContainer && cats.length > 0) {
+            // Keep "All" as first item
+            catListContainer.innerHTML = '<li><a href="#" class="filter-link-item active" data-category="All">All Collections</a></li>';
+
+            cats.forEach(cat => {
+              const catName = typeof cat === 'string' ? cat : (cat.name || '');
+              if (catName) {
+                const li = document.createElement('li');
+                li.innerHTML = `<a href="#" class="filter-link-item" data-category="${catName}">${catName}</a>`;
+                catListContainer.appendChild(li);
+              }
+            });
+
+            // Re-bind click listeners to new items
+            const newFilterCatItems = document.querySelectorAll('.filter-link-item');
+            newFilterCatItems.forEach(item => {
+              item.addEventListener('click', (e) => {
+                e.preventDefault();
+                activeCategory = item.getAttribute('data-category');
+                newFilterCatItems.forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+                renderCatalog();
+                closeDrawer();
+              });
+            });
+          }
+          return fetch('/api/products', { cache: 'no-store' });
+        })
         .then(r => r.json())
         .then(prods => {
           currentProducts = prods;
           
           // Initialise category active styles
-          filterCatItems.forEach(item => {
+          const currentFilters = document.querySelectorAll('.filter-link-item');
+          currentFilters.forEach(item => {
             const cat = item.getAttribute('data-category');
             if (cat === activeCategory) {
               item.classList.add('active');
