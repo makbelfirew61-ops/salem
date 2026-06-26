@@ -1807,6 +1807,25 @@
 
       const { toasts, add: toast, remove } = useToast();
 
+    function OfflineBanner() {
+      const [isOffline, setIsOffline] = useState(false);
+      useEffect(() => {
+        const checkStatus = () => {
+          setIsOffline(sessionStorage.getItem('aura_admin_offline_mode') === '1');
+        };
+        const interval = setInterval(checkStatus, 1000);
+        return () => clearInterval(interval);
+      }, []);
+      if (!isOffline) return null;
+      return (
+        <div className="bg-amber-500 text-white px-4 py-2 text-center text-xs font-bold animate-pulse shadow-md flex items-center justify-center gap-2">
+          <i className="fas fa-plug-circle-xmark"></i>
+          OFFLINE MODE — Changes are being saved locally to your browser only.
+          <button onClick={() => { sessionStorage.removeItem('aura_admin_offline_mode'); window.location.reload(); }} className="underline ml-2 hover:text-gray-100">Retry Connection</button>
+        </div>
+      );
+    }
+
       // Fetch products and categories on mount if authenticated
       useEffect(() => {
         if (auth) {
@@ -1828,7 +1847,6 @@
           })
           .catch(err => {
             console.error("API error, using local fallback", err);
-            sessionStorage.setItem('aura_admin_offline_mode', '1');
             // Local fallback
             const localProds = dbGetProducts();
             const defaultCats = ['Traditional', 'Modern Cut', 'Minimalist', 'Lounge Wear'];
@@ -1872,7 +1890,6 @@
         })
         .catch(err => {
           console.error(err);
-          sessionStorage.setItem('aura_admin_offline_mode', '1');
           toast(`Category "${trimmed}" saved locally (Offline)`, 'info');
         });
 
@@ -1905,7 +1922,6 @@
         })
         .catch(err => {
           console.error(err);
-          sessionStorage.setItem('aura_admin_offline_mode', '1');
           toast(`Category "${catToDelete}" removed locally (Offline)`, 'info');
         });
 
@@ -1943,7 +1959,6 @@
         })
         .catch(err => {
           console.error(err);
-          sessionStorage.setItem('aura_admin_offline_mode', '1');
           // Fallback to local
           setProducts(prev => {
             const idx = prev.findIndex(p=>p.id===prod.id);
@@ -1970,7 +1985,6 @@
         })
         .catch(err => {
           console.error(err);
-          sessionStorage.setItem('aura_admin_offline_mode', '1');
           toast('Product removed locally (Offline Mode).', 'info');
         });
 
@@ -2031,7 +2045,7 @@
           <div className={`${ml} min-h-screen flex flex-col transition-all duration-300`}>
             {/* Top bar */}
             <header className="bg-white border-b border-gray-100 sticky top-0 z-20 shadow-sm">
-              <div id="offline-banner-root"></div>
+              <OfflineBanner />
               <div className="h-16 px-4 md:px-6 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <button onClick={() => setCollapsed(false)} className="md:hidden w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 text-gray-600 focus:outline-none">
@@ -2051,6 +2065,7 @@
                 </div>
                 <div className="w-8 h-8 bg-accent rounded-full flex items-center justify-center font-heading font-bold text-white text-xs">AD</div>
               </div>
+              </div>
             </header>
 
             {/* Page content */}
@@ -2066,61 +2081,20 @@
 
     ReactDOM.createRoot(document.getElementById('root')).render(<App />);
   </script>
-
-  <div id="offline-banner-root"></div>
-
-  <script type="text/template" id="offline-banner-template">
-    const { useState, useEffect } = React;
-    function OfflineBanner() {
-      const [isOffline, setIsOffline] = useState(false);
-
-      useEffect(() => {
-        const checkStatus = () => {
-          const status = sessionStorage.getItem('aura_admin_offline_mode') === '1';
-          setIsOffline(status);
-        };
-        const interval = setInterval(checkStatus, 1000);
-        return () => clearInterval(interval);
-      }, []);
-
-      if (!isOffline) return <div style={{height:0}} id="offline-banner-active-marker" data-active="false"></div>;
-
-      return (
-        <div id="offline-banner-active-marker" data-active="true" className="bg-amber-500 text-white px-4 py-2 text-center text-xs font-bold animate-pulse shadow-md flex items-center justify-center gap-2">
-          <i className="fas fa-plug-circle-xmark"></i>
-          OFFLINE MODE — Changes are being saved locally to your browser only.
-          <button onClick={() => { sessionStorage.removeItem('aura_admin_offline_mode'); window.location.reload(); }} className="underline ml-2 hover:text-gray-100">Retry Connection</button>
-        </div>
-      );
-    }
-    function mountOfflineBanner() {
-      const offlineRoot = document.getElementById('offline-banner-root');
-      if (offlineRoot) {
-        ReactDOM.createRoot(offlineRoot).render(<OfflineBanner />);
-      } else {
-        setTimeout(mountOfflineBanner, 100);
-      }
-    }
-    mountOfflineBanner();
-  </script>
   <script>
     (function() {
-      const templates = ['admin-app-template', 'offline-banner-template'];
-      templates.forEach(id => {
-        const template = document.getElementById(id);
-        if (!template || !window.Babel) return;
-        try {
-          const transformed = Babel.transform(template.textContent, {
-            presets: [["react", { runtime: "classic" }]]
-          }).code;
-          const script = document.createElement('script');
-          script.type = 'module';
-          script.text = transformed;
-          document.body.appendChild(script);
-        } catch (error) {
-          console.error(`${id} compile failed:`, error);
-        }
-      });
+      const template = document.getElementById('admin-app-template');
+      if (!template || !window.Babel) return;
+      try {
+        const transformed = Babel.transform(template.textContent, {
+          presets: [["react", { runtime: "classic" }]]
+        }).code;
+        const script = document.createElement('script');
+        script.text = transformed;
+        document.body.appendChild(script);
+      } catch (error) {
+        console.error('Admin app compile failed:', error);
+      }
     })();
   </script>
 </body>

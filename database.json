@@ -152,6 +152,20 @@
       "color": "#ff0000",
       "colorName": "Red sync",
       "id": 1782458199466,
+      "rating": 4.8,
+      "reviews": 20,
+      "emoji": "✨",
+      "icon": "✨"
+    },
+    {
+      "title": "E2E-Sync-Item-1782464709",
+      "name": "E2E-Sync-Item-1782464709",
+      "category": "Minimalist",
+      "price": 555,
+      "description": "E2E testing synchronization",
+      "color": "#ff0000",
+      "colorName": "Red sync",
+      "id": 1782458199467,
       "rating": 4.8
     }
   ],
