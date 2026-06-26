@@ -99,7 +99,7 @@ function updateCartUI() {
         row.innerHTML = `
           <div class="cart-sidebar-thumb">
             ${item.image ? `
-              <img src="${item.image}" alt="${ (item.name || item.title)}">
+              <img src="${item.image}" alt="${item.name || item.title}">
             ` : `
               <div class="cart-sidebar-icon-thumb" style="background-color: ${item.color || '#f3ece4'}">
                 ${item.emoji || '✨'}
@@ -107,7 +107,7 @@ function updateCartUI() {
             `}
           </div>
           <div class="cart-sidebar-details">
-            <h4>${ (item.name || item.title)}</h4>
+            <h4>${item.name || item.title}</h4>
             <p class="cart-sidebar-meta">Size: ${item.size || 'M'} | Color: ${item.colorName || 'Default'}</p>
             <div class="cart-sidebar-qty-row">
               <div class="qty-btn-group">
@@ -140,7 +140,7 @@ function updateCartUI() {
 
 function addToCart(productId, size = 'M', colorName = 'Cream', colorCode = '#f5f2eb', quantity = 1) {
   // Fetch products from server/local and find match
-  fetch('/api/products', { cache: 'no-store' })
+  fetch('/api/products.php', { cache: 'no-store' })
     .then(r => r.json())
     .then(prods => {
       const product = prods.find(p => p.id === Number(productId) || p.id === productId);
@@ -168,7 +168,7 @@ function addToCart(productId, size = 'M', colorName = 'Cream', colorCode = '#f5f
       }
 
       updateCartUI();
-      showToast(`${ (product.name || product.title)} successfully added to bag!`, 'success');
+      showToast(`${product.name || product.title} successfully added to bag!`, 'success');
       
       // Auto open drawer
       const drawer = document.getElementById('cartDrawer');
@@ -186,7 +186,7 @@ function removeFromCart(index) {
   const item = cart[index];
   cart.splice(index, 1);
   updateCartUI();
-  if (item) showToast(`${ (item.name || item.title)} removed from bag.`, 'info');
+  if (item) showToast(`${item.name || item.title} removed from bag.`, 'info');
 }
 
 function changeCartQty(index, offset) {
@@ -379,7 +379,7 @@ function renderFavoritesInProfile() {
     return;
   }
 
-  fetch('/api/products', { cache: 'no-store' })
+  fetch('/api/products.php', { cache: 'no-store' })
     .then(r => r.json())
     .then(prods => {
       const favProducts = prods.filter(p => wishlist.includes(p.id));
@@ -400,7 +400,7 @@ function renderFavoritesInProfile() {
         card.innerHTML = `
           <div class="product-img-wrapper">
             ${prod.image ? `
-              <img class="product-card-img" src="${prod.image}" alt="${ (prod.name || prod.title)}">
+              <img class="product-card-img" src="${prod.image}" alt="${prod.name || prod.title}">
             ` : `
               <div class="product-icon-panel" style="background-color: ${prod.color || '#f3ece4'}">
                 <span class="product-icon-emoji">${prod.emoji || '✨'}</span>
@@ -421,7 +421,7 @@ function renderFavoritesInProfile() {
           </div>
           <a href="product-detail.html?id=${prod.id}" class="product-card-body">
             <span class="product-card-category">${prod.category || 'Casual'}</span>
-            <h3 class="product-card-title">${ (prod.name || prod.title)}</h3>
+            <h3 class="product-card-title">${prod.name || prod.title}</h3>
             <div class="product-card-rating">
               <i class="fa-solid fa-star"></i>
               <i class="fa-solid fa-star"></i>
@@ -474,7 +474,7 @@ function renderCheckoutPageList() {
           ${item.image ? `<img src="${item.image}" style="width:100%; height:100%; object-fit:cover;" alt="">` : item.emoji || '👕'}
         </div>
         <div>
-          <h4 style="font-weight:600; font-size:0.95rem;">${ (item.name || item.title)}</h4>
+          <h4 style="font-weight:600; font-size:0.95rem;">${item.name || item.title}</h4>
           <span style="font-size:0.75rem; color:var(--gray-500);">Size: ${item.size} | Color: ${item.colorName}</span>
         </div>
       </div>
@@ -608,7 +608,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // ── HOME PAGE INIT ──
   const homeProdsGrid = document.getElementById('featuredProductsGrid');
   if (homeProdsGrid) {
-    fetch('/api/products', { cache: 'no-store' })
+    fetch('/api/products.php', { cache: 'no-store' })
       .then(r => r.json())
       .then(prods => {
         // Render 4 featured products
@@ -619,7 +619,7 @@ document.addEventListener('DOMContentLoaded', () => {
           card.innerHTML = `
             <div class="product-img-wrapper">
               ${prod.image ? `
-                <img class="product-card-img" src="${prod.image}" alt="${ (prod.name || prod.title)}">
+                <img class="product-card-img" src="${prod.image}" alt="${prod.name || prod.title}">
               ` : `
                 <div class="product-icon-panel" style="background-color: ${prod.color || '#f3ece4'}">
                   <span class="product-icon-emoji">${prod.emoji || '✨'}</span>
@@ -644,7 +644,7 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
             <a href="product-detail.html?id=${prod.id}" class="product-card-body">
               <span class="product-card-category">${prod.category || 'Casual'}</span>
-              <h3 class="product-card-title">${ (prod.name || prod.title)}</h3>
+              <h3 class="product-card-title">${prod.name || prod.title}</h3>
               <div class="product-card-rating">
                 <i class="fa-solid fa-star"></i>
                 <i class="fa-solid fa-star"></i>
@@ -718,7 +718,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function fetchAndRender() {
       // Fetch categories first to populate sidebar
-      fetch('/api/categories', { cache: 'no-store' })
+      fetch('/api/categories.php', { cache: 'no-store' })
         .then(r => r.json())
         .then(cats => {
           const catListContainer = document.querySelector('.filter-category-list');
@@ -748,11 +748,11 @@ document.addEventListener('DOMContentLoaded', () => {
               });
             });
           }
-          return fetch('/api/products', { cache: 'no-store' });
+          return fetch('/api/products.php', { cache: 'no-store' });
         })
         .catch(err => {
           console.error("Error fetching categories:", err);
-          return fetch('/api/products', { cache: 'no-store' });
+          return fetch('/api/products.php', { cache: 'no-store' });
         })
         .then(r => {
           if (!r.ok) throw new Error("Failed to fetch products");
@@ -834,7 +834,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Search text limit
         if (searchQuery) {
-          const text = ( (p.name || p.title) + ' ' + p.description + ' ' + p.category).toLowerCase();
+          const text = ((p.name || p.title) + ' ' + p.description + ' ' + p.category).toLowerCase();
           if (!text.includes(searchQuery.toLowerCase())) return false;
         }
 
@@ -901,7 +901,7 @@ document.addEventListener('DOMContentLoaded', () => {
         card.innerHTML = `
           <div class="product-img-wrapper">
             ${prod.image ? `
-              <img class="product-card-img" src="${prod.image}" alt="${ (prod.name || prod.title)}">
+              <img class="product-card-img" src="${prod.image}" alt="${prod.name || prod.title}">
             ` : `
               <div class="product-icon-panel" style="background-color: ${prod.color || '#f3ece4'}">
                 <span class="product-icon-emoji">${prod.emoji || '✨'}</span>
@@ -926,7 +926,7 @@ document.addEventListener('DOMContentLoaded', () => {
           </div>
           <a href="product-detail.html?id=${prod.id}" class="product-card-body">
             <span class="product-card-category">${prod.category || 'Casual'}</span>
-            <h3 class="product-card-title">${ (prod.name || prod.title)}</h3>
+            <h3 class="product-card-title">${prod.name || prod.title}</h3>
             <div class="product-card-rating">
               <i class="fa-solid fa-star"></i>
               <i class="fa-solid fa-star"></i>
@@ -1021,7 +1021,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // ── PRODUCT DETAIL PAGE INIT ──
   const detailPageId = new URLSearchParams(window.location.search).get('id');
   if (detailPageId && document.getElementById('detailTitle')) {
-    fetch('/api/products', { cache: 'no-store' })
+    fetch('/api/products.php', { cache: 'no-store' })
       .then(r => r.json())
       .then(prods => {
         const prod = prods.find(p => p.id === Number(detailPageId) || p.id === detailPageId);
@@ -1032,7 +1032,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Fill data fields
         document.getElementById('detailCategory').textContent = prod.category;
-        document.getElementById('detailTitle').textContent =  (prod.name || prod.title);
+        document.getElementById('detailTitle').textContent = prod.name || prod.title;
         document.getElementById('detailRatingNum').textContent = `(${prod.rating || 4.8})`;
         document.getElementById('detailDesc').textContent = prod.description;
 
@@ -1103,7 +1103,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                   `;
                 } else {
-                  galleryMain.innerHTML = `<img src="${opt.img}" alt="${ (prod.name || prod.title)}" style="width:100%; height:100%; object-fit:cover;">`;
+                  galleryMain.innerHTML = `<img src="${opt.img}" alt="${prod.name || prod.title}" style="width:100%; height:100%; object-fit:cover;">`;
                 }
               });
               thumbsBox.appendChild(div);
@@ -1122,12 +1122,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
               `;
             } else {
-              galleryMain.innerHTML = `<img src="${firstOpt.img}" alt="${ (prod.name || prod.title)}" style="width:100%; height:100%; object-fit:cover;">`;
+              galleryMain.innerHTML = `<img src="${firstOpt.img}" alt="${prod.name || prod.title}" style="width:100%; height:100%; object-fit:cover;">`;
             }
           } else {
             // No custom option images, render the single product emoji or standard image
             if (prod.image) {
-              galleryMain.innerHTML = `<img src="${prod.image}" alt="${ (prod.name || prod.title)}" style="width:100%; height:100%; object-fit:cover;">`;
+              galleryMain.innerHTML = `<img src="${prod.image}" alt="${prod.name || prod.title}" style="width:100%; height:100%; object-fit:cover;">`;
             } else {
               galleryMain.innerHTML = `
                 <div class="detail-icon-panel-wrap" style="background-color: ${prod.color || '#f3ece4'}">
@@ -1332,7 +1332,7 @@ document.addEventListener('DOMContentLoaded', () => {
       loader.style.display = 'inline-block';
 
       // Call API
-      fetch('/api/auth/login', {
+      fetch('/api/auth/login.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password: pass })
@@ -1434,7 +1434,7 @@ document.addEventListener('DOMContentLoaded', () => {
       loader.style.display = 'inline-block';
 
       // Call API
-      fetch('/api/auth/register', {
+      fetch('/api/auth/register.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ firstName: first, lastName: last, email, password: pass })

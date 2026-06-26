@@ -330,7 +330,7 @@ async function startServer() {
   app.delete("/api/categories/:name", handleDeleteCategory);
 
   // ── CUSTOMER MEMBER AUTH API ──
-  app.post("/api/auth/register", (req, res) => {
+  const handleRegister = (req, res) => {
     const { firstName, lastName, email, password } = req.body;
     if (!firstName || !email || !password) {
       return res.status(400).json({ success: false, message: "Required fields are missing." });
@@ -357,9 +357,9 @@ async function startServer() {
 
     console.log(`[USER DB]: Registered user ${email}`);
     res.json({ success: true, message: "Registered successfully." });
-  });
+  };
 
-  app.post("/api/auth/login", (req, res) => {
+  const handleLogin = (req, res) => {
     const { email, password } = req.body;
     if (!email || !password) {
       return res.status(400).json({ success: false, message: "Email and password are required." });
@@ -375,7 +375,12 @@ async function startServer() {
     } else {
       res.status(401).json({ success: false, message: "Invalid email or password." });
     }
-  });
+  };
+
+  app.post("/api/auth/register", handleRegister);
+  app.post("/api/auth/register.php", handleRegister);
+  app.post("/api/auth/login", handleLogin);
+  app.post("/api/auth/login.php", handleLogin);
 
   // ── ADMIN AUTH API ──
   app.post("/api/admin/login", (req, res) => {
