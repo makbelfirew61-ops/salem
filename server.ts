@@ -68,9 +68,14 @@ function standardizeProduct(p: any) {
 function readDB() {
   try {
     if (!fs.existsSync(DB_PATH)) {
-      return { admin: { passwordHash: "elawipass123" }, categories: [], products: [], users: [] };
+      const initialDB = { admin: { passwordHash: "elawipass123" }, categories: [], products: [], users: [] };
+      writeDB(initialDB);
+      return initialDB;
     }
     const raw = fs.readFileSync(DB_PATH, "utf-8");
+    if (!raw || raw.trim() === "") {
+        return { admin: { passwordHash: "elawipass123" }, categories: [], products: [], users: [] };
+    }
     const parsed = JSON.parse(raw);
     if (parsed.products && Array.isArray(parsed.products)) {
       parsed.products = parsed.products.map(standardizeProduct);
@@ -78,12 +83,17 @@ function readDB() {
     return parsed;
   } catch (error) {
     console.error("Database reading error:", error);
+    // Return a minimal valid DB instead of crashing
     return { admin: { passwordHash: "elawipass123" }, categories: [], products: [], users: [] };
   }
 }
 
 // Helper to safely write database
 function writeDB(data: any) {
+  if (!data || typeof data !== "object") {
+    console.error("Attempted to write invalid data to database");
+    return false;
+  }
   try {
     fs.writeFileSync(DB_PATH, JSON.stringify(data, null, 2), "utf-8");
     return true;

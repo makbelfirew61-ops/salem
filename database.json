@@ -3,22 +3,10 @@
     "passwordHash": "elawipass123"
   },
   "categories": [
-    {
-      "name": "Traditional",
-      "count": 18
-    },
-    {
-      "name": "Modern Cut",
-      "count": 12
-    },
-    {
-      "name": "Minimalist",
-      "count": 15
-    },
-    {
-      "name": "Lounge Wear",
-      "count": 8
-    }
+    { "name": "Traditional", "count": 18 },
+    { "name": "Modern Cut", "count": 12 },
+    { "name": "Minimalist", "count": 15 },
+    { "name": "Lounge Wear", "count": 8 }
   ],
   "products": [
     {
@@ -32,9 +20,7 @@
       "colorName": "Alabaster Cream",
       "isNew": true,
       "description": "Hand-loomed cotton Habesha dress adorned with pure hand-stitched golden 'tilet' embroidery. A true cultural statement of premium heritage craftsmanship.",
-      "title": "The Alabaster Habesha Kemis",
-      "reviews": 26,
-      "icon": "👗"
+      "title": "The Alabaster Habesha Kemis"
     },
     {
       "id": 2,
@@ -48,106 +34,8 @@
       "salePrice": 380,
       "description": "Double-breasted unstructured blazer matched with wide-legged tailored trousers. Spun from high-density, breathable Italian organic linen.",
       "title": "The Terracotta Linen Suit",
-      "reviews": 115,
-      "icon": "🧥",
       "originalPrice": 420
-    },
-    {
-      "id": 3,
-      "name": "The Obsidian Boubou",
-      "category": "Minimalist",
-      "price": 310,
-      "rating": 4.7,
-      "emoji": "🥋",
-      "color": "#2d2a26",
-      "colorName": "Obsidian Charcoal",
-      "description": "A fluid, ankle-length unstructured boubou crafted with premium heavyweight silk-crepe. Designed for seamless comfort and sophisticated silhouettes.",
-      "title": "The Obsidian Boubou",
-      "reviews": 202,
-      "icon": "🥋"
-    },
-    {
-      "id": 4,
-      "name": "The Sage Green Kaftan",
-      "category": "Traditional",
-      "price": 240,
-      "rating": 4.8,
-      "emoji": "👘",
-      "color": "#8fa89b",
-      "colorName": "Sage Green",
-      "description": "Features dynamic drop-shoulders, continuous sleeve designs, and delicate white threadwork bordering the neckline. Perfectly blends heritage and comfort.",
-      "title": "The Sage Green Kaftan",
-      "reviews": 76,
-      "icon": "👘"
-    },
-    {
-      "id": 5,
-      "name": "Monochrome Wool Trench",
-      "category": "Modern Cut",
-      "price": 490,
-      "rating": 5,
-      "emoji": "🧥",
-      "color": "#4a4540",
-      "colorName": "Silt Gray",
-      "isNew": true,
-      "description": "Heavyweight double-faced wool wrap trench with a wide-notched lapel and dynamic tie belt. Perfect seasonal layering piece with structural drop sleeves.",
-      "title": "Monochrome Wool Trench",
-      "reviews": 213,
-      "icon": "🧥"
-    },
-    {
-      "id": 6,
-      "name": "Desert Knit Hooded Lounger",
-      "category": "Lounge Wear",
-      "price": 195,
-      "rating": 4.6,
-      "emoji": "👕",
-      "color": "#cda885",
-      "colorName": "Desert Tan",
-      "salePrice": 165,
-      "description": "Luxuriously soft hooded sweater spun from carded Mongolian cashmere and premium cotton fibers. Features custom ribbed cuffs and an relaxed body fit.",
-      "title": "Desert Knit Hooded Lounger",
-      "reviews": 149,
-      "icon": "👕",
-      "originalPrice": 195
-    },
-    {
-      "title": "Final-Verify-1782469643",
-      "name": "Final-Verify-1782469643",
-      "price": 888,
-      "description": "Final persistence check",
-      "category": "Modern Cut",
-      "id": 1782469643400,
-      "rating": 4.8,
-      "reviews": 122,
-      "emoji": "✨",
-      "icon": "✨",
-      "color": "#cda885",
-      "colorName": "Desert Tan"
-    },
-    {
-      "title": "Final-Verify-1782469826",
-      "name": "Final-Verify-1782469826",
-      "price": 888,
-      "description": "Final persistence check",
-      "category": "Modern Cut",
-      "id": 1782469826204,
-      "rating": 4.8,
-      "reviews": 121,
-      "emoji": "✨",
-      "icon": "✨",
-      "color": "#cda885",
-      "colorName": "Desert Tan"
     }
   ],
-  "users": [
-    {
-      "id": 1,
-      "firstName": "Jane",
-      "lastName": "Doe",
-      "email": "jane@example.com",
-      "passwordHash": "password123",
-      "points": 340
-    }
-  ]
+  "users": []
 }
