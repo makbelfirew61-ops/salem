@@ -18,26 +18,6 @@
     {
       "name": "Lounge Wear",
       "count": 8
-    },
-    {
-      "name": "DynamicCat",
-      "count": 0
-    },
-    {
-      "name": "Plum-Luxury",
-      "count": 0
-    },
-    {
-      "name": "New-Cat-1782459352",
-      "count": 0
-    },
-    {
-      "name": "New-Cat-1782459434",
-      "count": 0
-    },
-    {
-      "name": "New-Cat-1782459503",
-      "count": 0
     }
   ],
   "products": [
@@ -69,7 +49,8 @@
       "description": "Double-breasted unstructured blazer matched with wide-legged tailored trousers. Spun from high-density, breathable Italian organic linen.",
       "title": "The Terracotta Linen Suit",
       "reviews": 115,
-      "icon": "🧥"
+      "icon": "🧥",
+      "originalPrice": 420
     },
     {
       "id": 3,
@@ -127,46 +108,36 @@
       "description": "Luxuriously soft hooded sweater spun from carded Mongolian cashmere and premium cotton fibers. Features custom ribbed cuffs and an relaxed body fit.",
       "title": "Desert Knit Hooded Lounger",
       "reviews": 149,
-      "icon": "👕"
+      "icon": "👕",
+      "originalPrice": 195
     },
     {
-      "title": "Curl Item",
-      "category": "Minimalist",
-      "price": 456,
-      "description": "curl desc",
-      "id": 1782458199465,
-      "name": "Curl Item",
+      "title": "Final-Verify-1782469643",
+      "name": "Final-Verify-1782469643",
+      "price": 888,
+      "description": "Final persistence check",
+      "category": "Modern Cut",
+      "id": 1782469643400,
       "rating": 4.8,
-      "reviews": 67,
+      "reviews": 122,
       "emoji": "✨",
       "icon": "✨",
       "color": "#cda885",
       "colorName": "Desert Tan"
     },
     {
-      "title": "E2E-Sync-Item-1782459714",
-      "name": "E2E-Sync-Item-1782459714",
-      "category": "Minimalist",
-      "price": 555,
-      "description": "E2E testing synchronization",
-      "color": "#ff0000",
-      "colorName": "Red sync",
-      "id": 1782458199466,
+      "title": "Final-Verify-1782469826",
+      "name": "Final-Verify-1782469826",
+      "price": 888,
+      "description": "Final persistence check",
+      "category": "Modern Cut",
+      "id": 1782469826204,
       "rating": 4.8,
-      "reviews": 20,
+      "reviews": 121,
       "emoji": "✨",
-      "icon": "✨"
-    },
-    {
-      "title": "E2E-Sync-Item-1782464709",
-      "name": "E2E-Sync-Item-1782464709",
-      "category": "Minimalist",
-      "price": 555,
-      "description": "E2E testing synchronization",
-      "color": "#ff0000",
-      "colorName": "Red sync",
-      "id": 1782458199467,
-      "rating": 4.8
+      "icon": "✨",
+      "color": "#cda885",
+      "colorName": "Desert Tan"
     }
   ],
   "users": [
