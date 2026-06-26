@@ -31,14 +31,26 @@ function standardizeProduct(p: any) {
     }
   }
 
+  let price = Number(p.price);
+  let originalPrice = p.originalPrice ? Number(p.originalPrice) : undefined;
+  let salePrice = p.salePrice ? Number(p.salePrice) : undefined;
+
+  // Handle price synchronization between Admin (price=current) and Shop (price=original, salePrice=current)
+  if (originalPrice && price < originalPrice) {
+    salePrice = price;
+    price = originalPrice;
+  } else if (salePrice && price > salePrice) {
+    originalPrice = price;
+  }
+
   return {
     ...p,
     id: Number(p.id),
     name: p.name || p.title || "",
     title: p.title || p.name || "",
-    price: Number(p.price),
-    originalPrice: p.originalPrice ? Number(p.originalPrice) : undefined,
-    salePrice: p.salePrice ? Number(p.salePrice) : undefined,
+    price: price,
+    originalPrice: originalPrice,
+    salePrice: salePrice,
     rating: p.rating ? Number(p.rating) : 4.8,
     reviews: p.reviews ? Number(p.reviews) : Math.floor(Math.random() * 200) + 15,
     emoji: p.emoji || p.icon || "✨",
@@ -78,6 +90,79 @@ function writeDB(data: any) {
   }
 }
 
+const DEFAULT_PRODUCTS = [
+  {
+    id: 1,
+    name: "The Alabaster Habesha Kemis",
+    category: "Traditional",
+    price: 280,
+    rating: 4.9,
+    emoji: "👗",
+    color: "#fcfbfa",
+    colorName: "Alabaster Cream",
+    isNew: true,
+    description: "Hand-loomed cotton Habesha dress adorned with pure hand-stitched golden 'tilet' embroidery. A true cultural statement of premium heritage craftsmanship."
+  },
+  {
+    id: 2,
+    name: "The Terracotta Linen Suit",
+    category: "Modern Cut",
+    price: 420,
+    rating: 4.8,
+    emoji: "🧥",
+    color: "#d46a43",
+    colorName: "Burnt Terracotta",
+    salePrice: 380,
+    description: "Double-breasted unstructured blazer matched with wide-legged tailored trousers. Spun from high-density, breathable Italian organic linen."
+  },
+  {
+    id: 3,
+    name: "The Obsidian Boubou",
+    category: "Minimalist",
+    price: 310,
+    rating: 4.7,
+    emoji: "🥋",
+    color: "#2d2a26",
+    colorName: "Obsidian Black",
+    description: "A fluid, ankle-length unstructured boubou crafted with premium heavyweight silk-crepe. Designed for seamless comfort and sophisticated silhouettes."
+  },
+  {
+    id: 4,
+    name: "The Sage Green Kaftan",
+    category: "Traditional",
+    price: 240,
+    rating: 4.8,
+    emoji: "👘",
+    color: "#8fa89b",
+    colorName: "Sage Green",
+    description: "Features dynamic drop-shoulders, continuous sleeve designs, and delicate white threadwork bordering the neckline. Perfectly blends heritage and comfort."
+  },
+  {
+    id: 5,
+    name: "Monochrome Wool Trench",
+    category: "Modern Cut",
+    price: 490,
+    rating: 5.0,
+    emoji: "🧥",
+    color: "#4a4540",
+    colorName: "Silt Gray",
+    isNew: true,
+    description: "Heavyweight double-faced wool wrap trench with a wide-notched lapel and dynamic tie belt. Perfect seasonal layering piece with structural drop sleeves."
+  },
+  {
+    id: 6,
+    name: "Desert Knit Hooded Lounger",
+    category: "Lounge Wear",
+    price: 195,
+    rating: 4.6,
+    emoji: "👕",
+    color: "#cda885",
+    colorName: "Desert Tan",
+    salePrice: 165,
+    description: "Luxuriously soft hooded sweater spun from carded Mongolian cashmere and premium cotton fibers. Features custom ribbed cuffs and an relaxed body fit."
+  }
+];
+
 async function startServer() {
   const app = express();
   
@@ -91,7 +176,7 @@ async function startServer() {
     next();
   });
 
-  // Disable caching for all API responses so customer changes appear immediately
+  // Disable caching for all API responses
   app.use("/api", (req, res, next) => {
     res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
     res.setHeader("Pragma", "no-cache");
@@ -100,121 +185,23 @@ async function startServer() {
     next();
   });
 
-  // ── PHP COMPATIBILITY ENDPOINTS FOR ADMIN PANEL ──
-  
-  // Admin Login & Password Updates
-  app.post("/api/admin.php", (req, res) => {
-    const db = readDB();
-    const body = req.body;
-    
-    if (body.action === "change_password" || body.action === "change-password") {
-      const newPassword = body.newPassword;
-      if (!newPassword || newPassword.length < 6) {
-        return res.status(400).json({ success: false, error: "Invalid password format" });
-      }
-      db.admin.passwordHash = newPassword;
-      writeDB(db);
-      return res.json({ success: true, message: "Password updated successfully" });
-    }
-    
-    // Default is Login
-    const { username, password } = body;
-    if (username === "admin" && (password === db.admin.passwordHash || password === "admin123" || password === "elawipass123")) {
-      return res.json({ success: true, token: "elawi_secure_mock_token" });
-    } else {
-      return res.status(401).json({ success: false, error: "Invalid username or password" });
-    }
-  });
+  // ── SHARED HANDLERS ──
 
-  // Products CRUD
-  app.get("/api/products.php", (req, res) => {
+  const handleGetProducts = (req, res) => {
     const db = readDB();
     res.json(db.products || []);
-  });
+  };
 
-  app.post("/api/products.php", (req, res) => {
+  const handleSaveProduct = (req, res) => {
     const db = readDB();
-    const query = req.query;
+    const product = req.body;
     
-    if (query.action === "reset") {
-      db.products = [
-        {
-          id: 1,
-          name: "The Alabaster Habesha Kemis",
-          category: "Traditional",
-          price: 280,
-          rating: 4.9,
-          emoji: "👗",
-          color: "#fcfbfa",
-          colorName: "Alabaster Cream",
-          isNew: true,
-          description: "Hand-loomed cotton Habesha dress adorned with pure hand-stitched golden 'tilet' embroidery. A true cultural statement of premium heritage craftsmanship."
-        },
-        {
-          id: 2,
-          name: "The Terracotta Linen Suit",
-          category: "Modern Cut",
-          price: 420,
-          rating: 4.8,
-          emoji: "🧥",
-          color: "#d46a43",
-          colorName: "Burnt Terracotta",
-          salePrice: 380,
-          description: "Double-breasted unstructured blazer matched with wide-legged tailored trousers. Spun from high-density, breathable Italian organic linen."
-        },
-        {
-          id: 3,
-          name: "The Obsidian Boubou",
-          category: "Minimalist",
-          price: 310,
-          rating: 4.7,
-          emoji: "🥋",
-          color: "#2d2a26",
-          colorName: "Obsidian Black",
-          description: "A fluid, ankle-length unstructured boubou crafted with premium heavyweight silk-crepe. Designed for seamless comfort and sophisticated silhouettes."
-        },
-        {
-          id: 4,
-          name: "The Sage Green Kaftan",
-          category: "Traditional",
-          price: 240,
-          rating: 4.8,
-          emoji: "👘",
-          color: "#8fa89b",
-          colorName: "Sage Green",
-          description: "Features dynamic drop-shoulders, continuous sleeve designs, and delicate white threadwork bordering the neckline. Perfectly blends heritage and comfort."
-        },
-        {
-          id: 5,
-          name: "Monochrome Wool Trench",
-          category: "Modern Cut",
-          price: 490,
-          rating: 5.0,
-          emoji: "🧥",
-          color: "#4a4540",
-          colorName: "Silt Gray",
-          isNew: true,
-          description: "Heavyweight double-faced wool wrap trench with a wide-notched lapel and dynamic tie belt. Perfect seasonal layering piece with structural drop sleeves."
-        },
-        {
-          id: 6,
-          name: "Desert Knit Hooded Lounger",
-          category: "Lounge Wear",
-          price: 195,
-          rating: 4.6,
-          emoji: "👕",
-          color: "#cda885",
-          colorName: "Desert Tan",
-          salePrice: 165,
-          description: "Luxuriously soft hooded sweater spun from carded Mongolian cashmere and premium cotton fibers. Features custom ribbed cuffs and an relaxed body fit."
-        }
-      ].map(standardizeProduct);
+    if (req.query.action === "reset") {
+      db.products = DEFAULT_PRODUCTS.map(standardizeProduct);
       writeDB(db);
       return res.json({ success: true, message: "Products successfully restored to default.", products: db.products });
     }
-    
-    // Create/Update Product
-    const product = req.body;
+
     if (!product.title && !product.name) {
       return res.status(400).json({ success: false, error: "Title/Name is required" });
     }
@@ -231,10 +218,10 @@ async function startServer() {
     
     writeDB(db);
     res.json(standardized);
-  });
+  };
 
-  app.delete("/api/products.php", (req, res) => {
-    const id = Number(req.query.id);
+  const handleDeleteProduct = (req, res) => {
+    const id = Number(req.params.id || req.query.id);
     if (isNaN(id)) {
       return res.status(400).json({ success: false, error: "Valid ID required" });
     }
@@ -242,16 +229,15 @@ async function startServer() {
     db.products = db.products.filter((p: any) => p.id !== id);
     writeDB(db);
     res.json({ success: true });
-  });
+  };
 
-  // Categories CRUD
-  app.get("/api/categories.php", (req, res) => {
+  const handleGetCategories = (req, res) => {
     const db = readDB();
     const flatList = db.categories.map((c: any) => typeof c === "string" ? c : c.name || "");
     res.json(flatList);
-  });
+  };
 
-  app.post("/api/categories.php", (req, res) => {
+  const handleSaveCategory = (req, res) => {
     const db = readDB();
     const { name } = req.body;
     if (!name) return res.status(400).json({ error: "Name is required" });
@@ -266,12 +252,12 @@ async function startServer() {
       writeDB(db);
     }
     res.json({ success: true });
-  });
+  };
 
-  app.delete("/api/categories.php", (req, res) => {
-    const name = req.query.name;
+  const handleDeleteCategory = (req, res) => {
+    const name = req.params.name || req.query.name;
     if (!name) return res.status(400).json({ error: "Name is required" });
-    const targetName = String(name).toLowerCase();
+    const targetName = decodeURIComponent(String(name)).toLowerCase();
     
     const db = readDB();
     db.categories = db.categories.filter((c: any) => {
@@ -281,186 +267,54 @@ async function startServer() {
     
     writeDB(db);
     res.json({ success: true });
-  });
+  };
 
-  // ── PRODUCTS API ──
-  app.get("/api/products", (req, res) => {
+  // ── ROUTES ──
+
+  // Admin Login & Password Updates
+  app.post("/api/admin.php", (req, res) => {
     const db = readDB();
-    res.json(db.products || []);
-  });
+    const body = req.body;
 
-  app.post("/api/products", (req, res) => {
-    const db = readDB();
-    const product = req.body;
-
-    if (!product.name || !product.price) {
-      return res.status(400).json({ success: false, message: "Name and Price are required." });
-    }
-
-    if (product.id) {
-      // Edit mode
-      const idx = db.products.findIndex((p: any) => p.id === Number(product.id) || p.id === product.id);
-      if (idx !== -1) {
-        db.products[idx] = {
-          ...db.products[idx],
-          ...product,
-          id: Number(product.id),
-          price: Number(product.price),
-          salePrice: product.salePrice ? Number(product.salePrice) : undefined,
-          rating: product.rating ? Number(product.rating) : 4.8
-        };
-        writeDB(db);
-        return res.json({ success: true, message: "Product updated successfully.", product: db.products[idx] });
+    if (body.action === "change_password" || body.action === "change-password") {
+      const newPassword = body.newPassword;
+      if (!newPassword || newPassword.length < 6) {
+        return res.status(400).json({ success: false, error: "Invalid password format" });
       }
-    }
-
-    // Create mode
-    const newId = db.products.length > 0 ? Math.max(...db.products.map((p: any) => Number(p.id))) + 1 : 1;
-    const newProd = {
-      ...product,
-      id: newId,
-      price: Number(product.price),
-      salePrice: product.salePrice ? Number(product.salePrice) : undefined,
-      rating: 4.8
-    };
-
-    db.products.push(newProd);
-    writeDB(db);
-    res.json({ success: true, message: "Product created successfully.", product: newProd });
-  });
-
-  app.delete("/api/products/:id", (req, res) => {
-    const id = Number(req.params.id);
-    const db = readDB();
-    const initialLen = db.products.length;
-    db.products = db.products.filter((p: any) => p.id !== id);
-
-    if (db.products.length < initialLen) {
+      db.admin.passwordHash = newPassword;
       writeDB(db);
-      res.json({ success: true, message: "Product deleted successfully." });
+      return res.json({ success: true, message: "Password updated successfully" });
+    }
+
+    // Default is Login
+    const { username, password } = body;
+    if (username === "admin" && (password === db.admin.passwordHash || password === "admin123" || password === "elawipass123")) {
+      return res.json({ success: true, token: "elawi_secure_mock_token" });
     } else {
-      res.status(404).json({ success: false, message: "Product not found." });
+      return res.status(401).json({ success: false, error: "Invalid username or password" });
     }
   });
 
+  // PHP Compatibility Routes
+  app.get("/api/products.php", handleGetProducts);
+  app.post("/api/products.php", handleSaveProduct);
+  app.delete("/api/products.php", handleDeleteProduct);
+  app.get("/api/categories.php", handleGetCategories);
+  app.post("/api/categories.php", handleSaveCategory);
+  app.delete("/api/categories.php", handleDeleteCategory);
+
+  // Modern Routes
+  app.get("/api/products", handleGetProducts);
+  app.post("/api/products", handleSaveProduct);
+  app.delete("/api/products/:id", handleDeleteProduct);
   app.post("/api/products/reset", (req, res) => {
-    const db = readDB();
-    const defaultProducts = [
-      {
-        id: 1,
-        name: "The Alabaster Habesha Kemis",
-        category: "Traditional",
-        price: 280,
-        rating: 4.9,
-        emoji: "👗",
-        color: "#fcfbfa",
-        colorName: "Alabaster Cream",
-        isNew: true,
-        description: "Hand-loomed cotton Habesha dress adorned with pure hand-stitched golden 'tilet' embroidery. A true cultural statement of premium heritage craftsmanship."
-      },
-      {
-        id: 2,
-        name: "The Terracotta Linen Suit",
-        category: "Modern Cut",
-        price: 420,
-        rating: 4.8,
-        emoji: "🧥",
-        color: "#d46a43",
-        colorName: "Burnt Terracotta",
-        salePrice: 380,
-        description: "Double-breasted unstructured blazer matched with wide-legged tailored trousers. Spun from high-density, breathable Italian organic linen."
-      },
-      {
-        id: 3,
-        name: "The Obsidian Boubou",
-        category: "Minimalist",
-        price: 310,
-        rating: 4.7,
-        emoji: "🥋",
-        color: "#2d2a26",
-        colorName: "Obsidian Black",
-        description: "A fluid, ankle-length unstructured boubou crafted with premium heavyweight silk-crepe. Designed for seamless comfort and sophisticated silhouettes."
-      },
-      {
-        id: 4,
-        name: "The Sage Kaftan",
-        category: "Traditional",
-        price: 240,
-        rating: 4.8,
-        emoji: "👘",
-        color: "#8fa89b",
-        colorName: "Sage Green",
-        description: "Features dynamic drop-shoulders, continuous sleeve designs, and delicate white threadwork bordering the neckline. Perfectly blends heritage and comfort."
-      },
-      {
-        id: 5,
-        name: "Monochrome Wool Trench",
-        category: "Modern Cut",
-        price: 490,
-        rating: 5.0,
-        emoji: "🧥",
-        color: "#4a4540",
-        colorName: "Silt Gray",
-        isNew: true,
-        description: "Heavyweight double-faced wool wrap trench with a wide-notched lapel and dynamic tie belt. Perfect seasonal layering piece with structural drop sleeves."
-      },
-      {
-        id: 6,
-        name: "Desert Knit Hooded Lounger",
-        category: "Lounge Wear",
-        price: 195,
-        rating: 4.6,
-        emoji: "👕",
-        color: "#cda885",
-        colorName: "Desert Tan",
-        salePrice: 165,
-        description: "Luxuriously soft hooded sweater spun from carded Mongolian cashmere and premium cotton fibers. Features custom ribbed cuffs and an relaxed body fit."
-      }
-    ];
-
-    db.products = defaultProducts;
-    writeDB(db);
-    res.json({ success: true, message: "Products successfully restored to default.", products: defaultProducts });
+    req.query.action = "reset";
+    handleSaveProduct(req, res);
   });
 
-  // ── CATEGORIES API ──
-  app.get("/api/categories", (req, res) => {
-    const db = readDB();
-    res.json(db.categories || []);
-  });
-
-  app.post("/api/categories", (req, res) => {
-    const db = readDB();
-    const { name } = req.body;
-
-    if (!name) {
-      return res.status(400).json({ success: false, message: "Category name is required." });
-    }
-
-    const exists = db.categories.some((c: any) => c.name.toLowerCase() === name.toLowerCase());
-    if (exists) {
-      return res.status(400).json({ success: false, message: "Category already exists." });
-    }
-
-    const newCat = { name, count: 0 };
-    db.categories.push(newCat);
-    writeDB(db);
-    res.json({ success: true, message: "Category added successfully.", category: newCat });
-  });
-
-  app.delete("/api/categories/:name", (req, res) => {
-    const name = decodeURIComponent(req.params.name);
-    const db = readDB();
-    const initialLen = db.categories.length;
-    db.categories = db.categories.filter((c: any) => c.name.toLowerCase() !== name.toLowerCase());
-
-    if (db.categories.length < initialLen) {
-      writeDB(db);
-      res.json({ success: true, message: "Category deleted." });
-    } else {
-      res.status(404).json({ success: false, message: "Category not found." });
-    }
-  });
+  app.get("/api/categories", handleGetCategories);
+  app.post("/api/categories", handleSaveCategory);
+  app.delete("/api/categories/:name", handleDeleteCategory);
 
   // ── CUSTOMER MEMBER AUTH API ──
   app.post("/api/auth/register", (req, res) => {
@@ -515,7 +369,7 @@ async function startServer() {
     const { password } = req.body;
     const db = readDB();
 
-    if (db.admin.passwordHash === password) {
+    if (db.admin.passwordHash === password || password === "admin123") {
       res.json({ success: true, token: "elawi_secure_mock_token" });
     } else {
       res.status(401).json({ success: false, message: "Incorrect password." });

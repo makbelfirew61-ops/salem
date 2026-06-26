@@ -3,10 +3,42 @@
     "passwordHash": "elawipass123"
   },
   "categories": [
-    { "name": "Traditional", "count": 18 },
-    { "name": "Modern Cut", "count": 12 },
-    { "name": "Minimalist", "count": 15 },
-    { "name": "Lounge Wear", "count": 8 }
+    {
+      "name": "Traditional",
+      "count": 18
+    },
+    {
+      "name": "Modern Cut",
+      "count": 12
+    },
+    {
+      "name": "Minimalist",
+      "count": 15
+    },
+    {
+      "name": "Lounge Wear",
+      "count": 8
+    },
+    {
+      "name": "DynamicCat",
+      "count": 0
+    },
+    {
+      "name": "Plum-Luxury",
+      "count": 0
+    },
+    {
+      "name": "New-Cat-1782459352",
+      "count": 0
+    },
+    {
+      "name": "New-Cat-1782459434",
+      "count": 0
+    },
+    {
+      "name": "New-Cat-1782459503",
+      "count": 0
+    }
   ],
   "products": [
     {
@@ -19,7 +51,10 @@
       "color": "#fcfbfa",
       "colorName": "Alabaster Cream",
       "isNew": true,
-      "description": "Hand-loomed cotton Habesha dress adorned with pure hand-stitched golden 'tilet' embroidery. A true cultural statement of premium heritage craftsmanship."
+      "description": "Hand-loomed cotton Habesha dress adorned with pure hand-stitched golden 'tilet' embroidery. A true cultural statement of premium heritage craftsmanship.",
+      "title": "The Alabaster Habesha Kemis",
+      "reviews": 26,
+      "icon": "👗"
     },
     {
       "id": 2,
@@ -31,7 +66,10 @@
       "color": "#d46a43",
       "colorName": "Burnt Terracotta",
       "salePrice": 380,
-      "description": "Double-breasted unstructured blazer matched with wide-legged tailored trousers. Spun from high-density, breathable Italian organic linen."
+      "description": "Double-breasted unstructured blazer matched with wide-legged tailored trousers. Spun from high-density, breathable Italian organic linen.",
+      "title": "The Terracotta Linen Suit",
+      "reviews": 115,
+      "icon": "🧥"
     },
     {
       "id": 3,
@@ -41,8 +79,11 @@
       "rating": 4.7,
       "emoji": "🥋",
       "color": "#2d2a26",
-      "colorName": "Obsidian Black",
-      "description": "A fluid, ankle-length unstructured boubou crafted with premium heavyweight silk-crepe. Designed for seamless comfort and sophisticated silhouettes."
+      "colorName": "Obsidian Charcoal",
+      "description": "A fluid, ankle-length unstructured boubou crafted with premium heavyweight silk-crepe. Designed for seamless comfort and sophisticated silhouettes.",
+      "title": "The Obsidian Boubou",
+      "reviews": 202,
+      "icon": "🥋"
     },
     {
       "id": 4,
@@ -53,19 +94,25 @@
       "emoji": "👘",
       "color": "#8fa89b",
       "colorName": "Sage Green",
-      "description": "Features dynamic drop-shoulders, continuous sleeve designs, and delicate white threadwork bordering the neckline. Perfectly blends heritage and comfort."
+      "description": "Features dynamic drop-shoulders, continuous sleeve designs, and delicate white threadwork bordering the neckline. Perfectly blends heritage and comfort.",
+      "title": "The Sage Green Kaftan",
+      "reviews": 76,
+      "icon": "👘"
     },
     {
       "id": 5,
       "name": "Monochrome Wool Trench",
       "category": "Modern Cut",
       "price": 490,
-      "rating": 5.0,
+      "rating": 5,
       "emoji": "🧥",
       "color": "#4a4540",
       "colorName": "Silt Gray",
       "isNew": true,
-      "description": "Heavyweight double-faced wool wrap trench with a wide-notched lapel and dynamic tie belt. Perfect seasonal layering piece with structural drop sleeves."
+      "description": "Heavyweight double-faced wool wrap trench with a wide-notched lapel and dynamic tie belt. Perfect seasonal layering piece with structural drop sleeves.",
+      "title": "Monochrome Wool Trench",
+      "reviews": 213,
+      "icon": "🧥"
     },
     {
       "id": 6,
@@ -77,7 +124,35 @@
       "color": "#cda885",
       "colorName": "Desert Tan",
       "salePrice": 165,
-      "description": "Luxuriously soft hooded sweater spun from carded Mongolian cashmere and premium cotton fibers. Features custom ribbed cuffs and an relaxed body fit."
+      "description": "Luxuriously soft hooded sweater spun from carded Mongolian cashmere and premium cotton fibers. Features custom ribbed cuffs and an relaxed body fit.",
+      "title": "Desert Knit Hooded Lounger",
+      "reviews": 149,
+      "icon": "👕"
+    },
+    {
+      "title": "Curl Item",
+      "category": "Minimalist",
+      "price": 456,
+      "description": "curl desc",
+      "id": 1782458199465,
+      "name": "Curl Item",
+      "rating": 4.8,
+      "reviews": 67,
+      "emoji": "✨",
+      "icon": "✨",
+      "color": "#cda885",
+      "colorName": "Desert Tan"
+    },
+    {
+      "title": "E2E-Sync-Item-1782459714",
+      "name": "E2E-Sync-Item-1782459714",
+      "category": "Minimalist",
+      "price": 555,
+      "description": "E2E testing synchronization",
+      "color": "#ff0000",
+      "colorName": "Red sync",
+      "id": 1782458199466,
+      "rating": 4.8
     }
   ],
   "users": [
